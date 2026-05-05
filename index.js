@@ -91,36 +91,30 @@ class TodoList extends Component {
     this.update();
   }
 
+  onToggleDone = (id) => {
+    const todo = this.state.todos.find((item) => item.id === id);
+    if (todo) {
+      todo.isDone = !todo.isDone;
+      this.update();
+    }
+  }
+
   render() {
     return createElement("div", { class: "todo-list" }, [
       createElement("h1", {}, "TODO List"),
-      new AddTask(this.onAddTask, this.onAddInputChange, this.state.newTaskText).getDomNode(),
+      new AddTask(this.onAddTask, this.onAddInputChange, this.state.inputValue).getDomNode(),
       createElement(
         "ul",
         { id: "todos" },
         this.state.todos.map((todo) =>
-          createElement("li", {}, [
-            createElement("input", { type: "checkbox", ...(todo.isDone ? {checked: "checked"} : {})
-            }, null, {
-              change: () => {
-                todo.isDone = !todo.isDone;
-                this.update();
-              }
-            }),
-            createElement("label", {
-              style: todo.isDone ? "color: gray" : "",
-            }, todo.text),
-            createElement("button", {}, "🗑️", {
-              click: () => this.onRemoveTask(todo.id),
-            })
-          ]),
+          new Task(todo, this.onRemoveTask, this.onToggleDone).getDomNode()
         )
       ),
     ]);
   }
 }
 
-class AddTask extends TodoList {
+class AddTask extends Component {
   constructor(onAddTask, onAddInputChange, value) {
     super();
     this.onAddTask = onAddTask;
@@ -148,8 +142,8 @@ class AddTask extends TodoList {
 }
 
 
-class Task extends TodoList {
- constructor(todo, onDeleteTask, onToggleDone) {
+class Task extends Component {
+  constructor(todo, onDeleteTask, onToggleDone) {
     super();
     this.todo = todo;
     this.onDeleteTask = onDeleteTask;
@@ -160,7 +154,7 @@ class Task extends TodoList {
     return createElement("li", {}, [
       createElement(
         "input",
-        { type: "checkbox", checked: this.todo.isDone },
+        { type: "checkbox", ...(this.todo.isDone ? {checked: "checked"} : {}) },
         null,
         {
           change: () => this.onToggleDone(this.todo.id),
