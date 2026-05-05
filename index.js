@@ -94,20 +94,7 @@ class TodoList extends Component {
   render() {
     return createElement("div", { class: "todo-list" }, [
       createElement("h1", {}, "TODO List"),
-      createElement("div", { class: "add-todo" }, [
-        createElement("input", {
-          id: "new-todo",
-          type: "text",
-          placeholder: "Задание",
-          value: this.state.inputValue
-        }, null, {
-          input: this.onAddInputChange,
-        }),
-        createElement("button", { id: "add-btn" }, "+", {
-          click: this.onAddTask,
-        }),
-      ]),
-      
+      new AddTask(this.onAddTask, this.onAddInputChange, this.state.newTaskText).getDomNode(),
       createElement(
         "ul",
         { id: "todos" },
@@ -129,6 +116,64 @@ class TodoList extends Component {
           ]),
         )
       ),
+    ]);
+  }
+}
+
+class AddTask extends TodoList {
+  constructor(onAddTask, onAddInputChange, value) {
+    super();
+    this.onAddTask = onAddTask;
+    this.onAddInputChange = onAddInputChange;
+    this.value = value;
+  }
+
+  render() {
+    return createElement("div", { class: "add-todo" }, [
+      createElement(
+        "input",
+        {
+          id: "new-todo",
+          type: "text",
+          placeholder: "Задание",
+          value: this.value,
+        },
+        null,
+        { input: this.onAddInputChange }
+      ),
+
+      createElement("button", { id: "add-btn" }, "+", { click: this.onAddTask }),
+    ]);
+  }
+}
+
+
+class Task extends TodoList {
+ constructor(todo, onDeleteTask, onToggleDone) {
+    super();
+    this.todo = todo;
+    this.onDeleteTask = onDeleteTask;
+    this.onToggleDone = onToggleDone;
+  }
+
+  render() {
+    return createElement("li", {}, [
+      createElement(
+        "input",
+        { type: "checkbox", checked: this.todo.isDone },
+        null,
+        {
+          change: () => this.onToggleDone(this.todo.id),
+        }
+      ),
+      createElement(
+        "label",
+        { style: this.todo.isDone ? "color: gray;" : "color: black;" },
+        this.todo.text
+      ),
+      createElement("button", {}, "🗑️", {
+        click: () => this.onDeleteTask(this.todo.id),
+      }),
     ]);
   }
 }
