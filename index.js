@@ -68,8 +68,11 @@ class TodoList extends Component {
   onAddTask = () => {
     if (this.state.inputValue.trim() === "") return;
 
+    const nextId = this.state.todos.length > 0
+        ? this.state.todos[this.state.todos.length - 1].id + 1
+        : 1;
     const newTodo = {
-      id: this.state.todos[this.state.todos.length - 1].id + 1,
+      id: nextId,
       text: this.state.inputValue,
       isDone: false,
     }
@@ -81,6 +84,11 @@ class TodoList extends Component {
 
   onAddInputChange = (event) => {
     this.state.inputValue = event.target.value;
+  }
+
+  onRemoveTask = (id) => {
+    this.state.todos = this.state.todos.filter((item) => item.id !== id);
+    this.update();
   }
 
   render() {
@@ -105,10 +113,20 @@ class TodoList extends Component {
         { id: "todos" },
         this.state.todos.map((todo) =>
           createElement("li", {}, [
-            createElement("input", { type: "checkbox" }),
-            createElement("label", {}, todo.text),
-            createElement("button", {}, "🗑️"),
-          ])
+            createElement("input", { type: "checkbox", ...(todo.isDone ? {checked: "checked"} : {})
+            }, null, {
+              change: () => {
+                todo.isDone = !todo.isDone;
+                this.update();
+              }
+            }),
+            createElement("label", {
+              style: todo.isDone ? "color: gray" : "",
+            }, todo.text),
+            createElement("button", {}, "🗑️", {
+              click: () => this.onRemoveTask(todo.id),
+            })
+          ]),
         )
       ),
     ]);
