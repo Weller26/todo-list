@@ -35,6 +35,14 @@ class Component {
 }
 
 class TodoList extends Component {
+  state = {
+    todos: [
+      { id: 1, text: "Сделать домашку", isDone: false },
+      { id: 2, text: "Сделать практику", isDone: false },
+      { id: 3, text: "Пойти домой", isDone: false },
+    ],
+  };
+
   render() {
     return createElement("div", { class: "todo-list" }, [
       createElement("h1", {}, "TODO List"),
@@ -46,23 +54,18 @@ class TodoList extends Component {
         }),
         createElement("button", { id: "add-btn" }, "+"),
       ]),
-      createElement("ul", { id: "todos" }, [
-        createElement("li", {}, [
-          createElement("input", { type: "checkbox" }),
-          createElement("label", {}, "Сделать домашку"),
-          createElement("button", {}, "🗑️")
-        ]),
-        createElement("li", {}, [
-          createElement("input", { type: "checkbox" }),
-          createElement("label", {}, "Сделать практику"),
-          createElement("button", {}, "🗑️")
-        ]),
-        createElement("li", {}, [
-          createElement("input", { type: "checkbox" }),
-          createElement("label", {}, "Пойти домой"),
-          createElement("button", {}, "🗑️")
-        ]),
-      ]),
+      
+      createElement(
+        "ul",
+        { id: "todos" },
+        this.state.todos.map((todo) =>
+          createElement("li", {}, [
+            createElement("input", { type: "checkbox" }),
+            createElement("label", {}, todo.text),
+            createElement("button", {}, "🗑️"),
+          ])
+        )
+      ),
     ]);
   }
 }
