@@ -39,12 +39,16 @@ class Component {
     return this._domNode;
   }
 
-  update() {
-    const newDomNode = this.render();
-    if (this._domNode) {
-      this._domNode.replaceWith(newDomNode);
+  update () {
+    const parent = this._domNode.parentNode;
+    const nextDomNode = this.render();
+
+    if (parent) {
+      parent.replaceChild(nextDomNode, this._domNode);
     }
-    this._domNode = newDomNode;
+
+    this._domNode = nextDomNode;
+    return this._domNode;
   }
 }
 
