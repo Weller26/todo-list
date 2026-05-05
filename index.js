@@ -125,11 +125,6 @@ class TodoList extends Component {
 
   onDeleteTask = (id) => {
     this.state.todos = this.state.todos.filter((item) => item.id !== id);
-<<<<<<< Updated upstream
-    this.state
-=======
-    this.deleteTodo(id);
->>>>>>> Stashed changes
     this.update();
   }
 
