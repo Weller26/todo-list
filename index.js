@@ -56,13 +56,49 @@ class TodoList extends Component {
   constructor() {
     super();
     this.state = {
-      todos: [
+      todos: this.loadTodos(),
+      inputValue: "",
+    };
+  }
+
+  loadTodos() {
+    const todos = [];
+    let hasAny = false;
+
+    for (const key in localStorage) {
+      if (key.startsWith("todo_")) {
+        const id = parseInt(key.replace("todo_", ""), 10);
+        const text = localStorage.getItem(key);
+        const isDone = localStorage.getItem(`todoDone_${id}`) === "true";
+
+        todos.push({ id, text, isDone });
+        hasAny = true;
+      }
+    }
+
+    if (!hasAny) {
+      const defaultTodos = [
         { id: 1, text: "Сделать домашку", isDone: false },
         { id: 2, text: "Сделать практику", isDone: false },
         { id: 3, text: "Пойти домой", isDone: false },
-      ],
-      inputValue: "",
-    };
+      ];
+
+      
+      defaultTodos.forEach(todo => this.saveTodo(todo));
+      return defaultTodos;
+    }
+
+    return todos.sort((a, b) => a.id - b.id);
+  }
+
+  saveTodo(todo) {
+    localStorage.setItem(`todo_${todo.id}`, todo.text);
+    localStorage.setItem(`todoDone_${todo.id}`, todo.isDone);
+  }
+
+  deleteTodo(id) {
+    localStorage.removeItem(`todo_${id}`);
+    localStorage.removeItem(`todoDone_${id}`);
   }
 
   onAddTask = () => {
@@ -77,6 +113,7 @@ class TodoList extends Component {
       isDone: false,
     }
     this.state.todos.push(newTodo);
+    this.saveTodo(newTodo);
 
     this.state.inputValue = "";
     this.update();
@@ -88,7 +125,11 @@ class TodoList extends Component {
 
   onDeleteTask = (id) => {
     this.state.todos = this.state.todos.filter((item) => item.id !== id);
+<<<<<<< Updated upstream
     this.state
+=======
+    this.deleteTodo(id);
+>>>>>>> Stashed changes
     this.update();
   }
 
@@ -96,6 +137,7 @@ class TodoList extends Component {
     const todo = this.state.todos.find((item) => item.id === id);
     if (todo) {
       todo.isDone = !todo.isDone;
+      this.saveTodo(todo);
       this.update();
     }
   }
