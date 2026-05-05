@@ -86,8 +86,9 @@ class TodoList extends Component {
     this.state.inputValue = event.target.value;
   }
 
-  onRemoveTask = (id) => {
+  onDeleteTask = (id) => {
     this.state.todos = this.state.todos.filter((item) => item.id !== id);
+    this.state
     this.update();
   }
 
@@ -107,7 +108,7 @@ class TodoList extends Component {
         "ul",
         { id: "todos" },
         this.state.todos.map((todo) =>
-          new Task(todo, this.onRemoveTask, this.onToggleDone).getDomNode()
+          new Task(todo, this.onDeleteTask, this.onToggleDone).getDomNode()
         )
       ),
     ]);
@@ -145,28 +146,39 @@ class AddTask extends Component {
 class Task extends Component {
   constructor(todo, onDeleteTask, onToggleDone) {
     super();
-    this.todo = todo;
-    this.onDeleteTask = onDeleteTask;
-    this.onToggleDone = onToggleDone;
+    this.state = {
+      todo: todo,
+      onDeleteTask: onDeleteTask,
+      onToggleDone: onToggleDone,
+      warningReceived: false
+    }
   }
 
   render() {
     return createElement("li", {}, [
       createElement(
         "input",
-        { type: "checkbox", ...(this.todo.isDone ? {checked: "checked"} : {}) },
+        { type: "checkbox", ...(this.state.todo.isDone ? {checked: "checked"} : {}) },
         null,
         {
-          change: () => this.onToggleDone(this.todo.id),
+          change: () => this.state.onToggleDone(this.state.todo.id),
         }
       ),
       createElement(
         "label",
-        { style: this.todo.isDone ? "color: gray;" : "color: black;" },
-        this.todo.text
+        { style: this.state.todo.isDone ? "color: gray;" : "color: black;" },
+        this.state.todo.text
       ),
-      createElement("button", {}, "🗑️", {
-        click: () => this.onDeleteTask(this.todo.id),
+      createElement("button", {style: this.state.warningReceived ? "background-color: red;" : "" }, "🗑️", {
+        click: () => {
+          if (this.state.warningReceived) {
+            this.state.onDeleteTask(this.state.todo.id);
+          }
+          else {
+            this.state.warningReceived = true;
+            this.update();
+          }
+        }
       }),
     ]);
   }
