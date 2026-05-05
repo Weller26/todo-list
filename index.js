@@ -21,6 +21,12 @@
     element.appendChild(children);
   }
 
+  if (callbacks) {
+    Object.keys(callbacks).forEach((eventName) => {
+      element.addEventListener(eventName, callbacks[eventName]);
+    })
+  }
+
   return element;
 }
 
@@ -31,6 +37,14 @@ class Component {
   getDomNode() {
     this._domNode = this.render();
     return this._domNode;
+  }
+
+  update() {
+    const newDomNode = this.render();
+    if (this._domNode) {
+      this._domNode.replaceWith(newDomNode);
+    }
+    this._domNode = newDomNode;
   }
 }
 
@@ -43,9 +57,27 @@ class TodoList extends Component {
         { id: 2, text: "Сделать практику", isDone: false },
         { id: 3, text: "Пойти домой", isDone: false },
       ],
+      inputValue: "",
     };
   }
 
+  onAddTask = () => {
+    if (this.state.inputValue.trim() === "") return;
+
+    const newTodo = {
+      id: this.state.todos[this.state.todos.length - 1].id + 1,
+      text: this.state.inputValue,
+      isDone: false,
+    }
+    this.state.todos.push(newTodo);
+
+    this.state.inputValue = "";
+    this.update();
+  }
+
+  onAddInputChange = (event) => {
+    this.state.inputValue = event.target.value;
+  }
 
   render() {
     return createElement("div", { class: "todo-list" }, [
@@ -55,8 +87,13 @@ class TodoList extends Component {
           id: "new-todo",
           type: "text",
           placeholder: "Задание",
+          value: this.state.inputValue
+        }, null, {
+          input: this.onAddInputChange,
         }),
-        createElement("button", { id: "add-btn" }, "+"),
+        createElement("button", { id: "add-btn" }, "+", {
+          click: this.onAddTask,
+        }),
       ]),
       
       createElement(
@@ -71,14 +108,6 @@ class TodoList extends Component {
         )
       ),
     ]);
-  }
-
-  onAddTask() {
-
-  }
-
-  onAddInputChange() {
-
   }
 }
 
