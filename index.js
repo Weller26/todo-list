@@ -1,4 +1,4 @@
-﻿function createElement(tag, attributes, children) {
+﻿function createElement(tag, attributes, children, callbacks) {
   const element = document.createElement(tag);
 
   if (attributes) {
@@ -35,13 +35,17 @@ class Component {
 }
 
 class TodoList extends Component {
-  state = {
-    todos: [
-      { id: 1, text: "Сделать домашку", isDone: false },
-      { id: 2, text: "Сделать практику", isDone: false },
-      { id: 3, text: "Пойти домой", isDone: false },
-    ],
-  };
+  constructor() {
+    super();
+    this.state = {
+      todos: [
+        { id: 1, text: "Сделать домашку", isDone: false },
+        { id: 2, text: "Сделать практику", isDone: false },
+        { id: 3, text: "Пойти домой", isDone: false },
+      ],
+    };
+  }
+
 
   render() {
     return createElement("div", { class: "todo-list" }, [
@@ -67,6 +71,14 @@ class TodoList extends Component {
         )
       ),
     ]);
+  }
+
+  onAddTask() {
+
+  }
+
+  onAddInputChange() {
+
   }
 }
 
